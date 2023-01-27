@@ -84,57 +84,55 @@ def avastAVExclusion(folder_path):
 
 os.system("title Krnl Auto Downloader v1 - By notpoiu")
 
-if __name__ == "__main__":
-    if getScriptAdminPerm() == False:
-        print("this script is not run as administrator. please do so or else it wont function properly.")
-        os.system("pause")
-        exit()
-    
-    avastExists = findIfAvast()
-        
-    if not avastExists:
-        subprocess.run(["powershell.exe", "Set-MpPreference -DisableRealtimeMonitoring $true"])
-    
-    if avastExists:
-        disable_avast()
-    
-    print("Disabled antivirus program to allow download of krnl")
-    
-    KrnlDwnlLink = getUpdatedKRNLink()
-
-    if not KrnlDwnlLink:
-        os.system("pause")
-        exit()
-
-    # download krnl
-    def update_progress(count, block_size, total_size):
-        pbar.update(count*block_size)
-    
-    response = urllib.request.urlopen(KrnlDwnlLink)
-    total_size = int(response.info().get('Content-Length', 0))
-
-    with tqdm(total = total_size, unit = "B", unit_scale = True, unit_divisor = 1024) as pbar:
-        urllib.request.urlretrieve(KrnlDwnlLink, reporthook=update_progress)
-
-    # extract the folder
-    rar_file = rarfile.RarFile("KRNLWRD.rar")
-    rar_file.extractall()
-    rar_file.close()
-    
-    print(colored("KRNL has successfully been downloaded.", 'green'))
-
-    if not avastExists:
-        addWinDefExclusion(os.getcwd() + "/KRNLWRD")
-        subprocess.run(["powershell.exe", "Set-MpPreference -DisableRealtimeMonitoring $false"])
-
-    
-    if avastExists:
-        avastAVExclusion(os.getcwd() + "/KRNLWRD")
-        enable_avast()
-
-    print("Added krnl as a folder exception")
-    print("reenabled antivirus")
-
+if getScriptAdminPerm() == False:
+    print("this script is not run as administrator. please do so or else it wont function properly.")
     os.system("pause")
+    exit()
 
+avastExists = findIfAvast()
+    
+if not avastExists:
+    subprocess.run(["powershell.exe", "Set-MpPreference -DisableRealtimeMonitoring $true"])
+
+if avastExists:
+    disable_avast()
+
+print("Disabled antivirus program to allow download of krnl")
+
+KrnlDwnlLink = getUpdatedKRNLink()
+
+if not KrnlDwnlLink:
+    os.system("pause")
+    exit()
+
+# download krnl
+def update_progress(count, block_size, total_size):
+    pbar.update(count*block_size)
+
+response = urllib.request.urlopen(KrnlDwnlLink)
+total_size = int(response.info().get('Content-Length', 0))
+
+with tqdm(total = total_size, unit = "B", unit_scale = True, unit_divisor = 1024) as pbar:
+    urllib.request.urlretrieve(KrnlDwnlLink, reporthook=update_progress)
+
+# extract the folder
+rar_file = rarfile.RarFile("KRNLWRD.rar")
+rar_file.extractall()
+rar_file.close()
+
+print(colored("KRNL has successfully been downloaded.", 'green'))
+
+if not avastExists:
+    addWinDefExclusion(os.getcwd() + "/KRNLWRD")
+    subprocess.run(["powershell.exe", "Set-MpPreference -DisableRealtimeMonitoring $false"])
+
+
+if avastExists:
+    avastAVExclusion(os.getcwd() + "/KRNLWRD")
+    enable_avast()
+
+print("Added krnl as a folder exception")
+print("reenabled antivirus")
+
+os.system("pause")
 exit
